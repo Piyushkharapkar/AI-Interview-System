@@ -98,7 +98,7 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'users.CustomUser'
 
 
-GOOGLE_GEMINI_API_KEY = "AIzaSyAhZZvVXnVnoZxt520sXLxFqBQ1Mx3Pkyc"
+GOOGLE_GEMINI_API_KEY = "Your-GEMINI-API-KEY"
 
 
 CSRF_TRUSTED_ORIGINS = [
@@ -107,5 +107,5 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # In settings.py (for example)
-ASSEMBLYAI_API_KEY = "abfcef08ee084e5cbb98dab3ee5712dd"
+ASSEMBLYAI_API_KEY = "Your-AssemblyAI-API-KEY"
 
