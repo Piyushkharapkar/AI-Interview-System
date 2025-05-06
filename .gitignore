@@ -5,6 +5,7 @@
 __pycache__/
 *.sqlite3
 *.sqbpro
+backend/venv/
 
 # Node.js specific files
 node_modules/
@@ -26,4 +27,4 @@ MyApp/*.exe
 MyApp/LICENSE
 MyApp/LICENSES.chromium.html
 MyApp/locales/
-MyApp/resources/
+MyApp/resources/node_modules/

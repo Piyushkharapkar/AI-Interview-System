@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f8f8;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 20px 40px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+  color: #6a0dad;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+nav ul li {
+  display: inline;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+  color: #6a0dad;
+}
+
+.feedback-container {
+  max-width: 950px;
+  margin: 60px auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.12);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+h1 {
+  color: #6a0dad;
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.feedback-container p {
+  font-size: 18px;
+  color: #1b1b1b;
+  margin-bottom: 20px;
+}
+
+.feedback-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 18px 0;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left: 5px solid #5e3bee;
+}
+
+.feedback-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 7px 18px rgba(0, 0, 0, 0.12);
+}
+
+.feedback-card h3 {
+  color: #444;
+  font-size: 19px;
+  margin-bottom: 10px;
+}
+
+.feedback-card p {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.similarity-score {
+  font-weight: 600;
+  color: #5e3bee;
+  margin-top: 14px;
+}
+
+.go-home {
+  display: inline-block;
+  padding: 12px 30px;
+  background: #6a0dad;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 18px;
+  margin-top: 25px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.go-home:hover {
+  background: #5a0cab;
+  transform: scale(1.05);
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">MockMate-AI</div>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="how.html">How it Works?</a></li>
+        <li><a href="contactus.html">Contact us</a></li>
+      </ul>
+    </nav>
+  </header>
+  <div class="feedback-container">
+    <h1>Congratulations!</h1>
+    <p>Here is your interview feedback</p>
+    <p><strong>Your overall interview rating: <span id="rating">Loading...</span>/10</strong></p>
+    <div id="questions">
+      <!-- Feedback cards will be loaded dynamically -->
+    </div>
+    <a href="dashboard.html" class="go-home">Go Home</a>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const ratingElement = document.getElementById("rating");
+      const questionsContainer = document.getElementById("questions");
+      const accessToken = localStorage.getItem("access_token");
+  
+      if (!accessToken) {
+        alert("You are not logged in. Redirecting to login page...");
+        window.location.href = "login.html";
+        return;
+      }
+  
+      fetch("http://127.0.0.1:8000/api/feedback/evaluate/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + accessToken
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        ratingElement.textContent = data.rating || "N/A";
+  
+        questionsContainer.innerHTML = "";
+        if (data.results && data.results.length > 0) {
+          data.results.forEach(questionObj => {
+            const card = document.createElement("div");
+            card.className = "feedback-card";
+            card.innerHTML = `
+              <h3>Question:</h3>
+              <p>${questionObj.question || "Unknown Question"}</p>
+              <p><strong>Expected Answer:</strong> ${questionObj.expected_answer || "N/A"}</p>
+              <p><strong>Your Answer:</strong> ${questionObj.spoken_answer || "N/A"}</p>
+              <p><strong>Similarity Score:</strong> ${questionObj.similarity_score || "N/A"}/10</p>
+              <p><strong>Feedback:</strong> ${questionObj.feedback || "No feedback available"}</p>
+            `;
+            questionsContainer.appendChild(card);
+          });
+        } else {
+          questionsContainer.innerHTML = "<p>No questions available.</p>";
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching feedback:", error);
+        ratingElement.textContent = "Error fetching data";
+        questionsContainer.innerHTML = "<p>Failed to load feedback. Please try again later.</p>";
+      });
+    });
+  </script>
+</body>
+</html>
